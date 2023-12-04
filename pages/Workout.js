@@ -1,7 +1,8 @@
-import React from 'react'
-
-export default function Workout() {
-  return (
-    <div>Workout</div>
-  )
+import React from "react";
+import { Navigation } from "react-native-navigation";
+import { Text } from "react-native";
+export default function Workout({ navigation }) {
+    return <Text>Workout</Text>;
 }
+
+Navigation.registerComponent("Workout", () => Workout);
