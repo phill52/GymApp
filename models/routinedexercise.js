@@ -1,4 +1,6 @@
 import { Model } from "@nozbe/watermelondb";
+import { field, relation } from "@nozbe/watermelondb/decorators";
+
 export default class RoutinedExercise extends Model {
     static table = "routinedexercise";
     static associations = {
@@ -8,6 +10,5 @@ export default class RoutinedExercise extends Model {
     @field("exercisename") exercisename;
     @field("sets") sets;
     @field("reps") reps;
-    @field("muscletrained") muscleTrained;
     @relation("routineday", "routineday_id") routineday;
 }
