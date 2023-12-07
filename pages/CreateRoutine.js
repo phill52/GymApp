@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, ScrollView } from "react-native";
+import { View, Text, TextInput, Button, ScrollView, StyleSheet } from "react-native";
 
 export default function CreateRoutineScreen({ navigation }) {
     const [routineName, setRoutineName] = useState("");
@@ -13,13 +13,10 @@ export default function CreateRoutineScreen({ navigation }) {
             setExercises({ ...exercises, [newDayName]: [] });
             setNewDayName("");
         }
-        console.log(exercises);
     };
 
     const addExercise = (day) => {
-        // Destructure the new exercise details from the exercises state
-        const { newExerciseName, newSets, newReps } =
-            exercises[day]?.newExercise || {};
+        const { newExerciseName, newSets, newReps } = exercises[day]?.newExercise || {};
 
         if (newExerciseName && newSets > 0 && newReps > 0) {
             const newExercise = {
@@ -29,15 +26,13 @@ export default function CreateRoutineScreen({ navigation }) {
             };
 
             setExercises((prevExercises) => {
-                // Get the current exercises for the day, or initialize as an empty array
                 const currentExercises = prevExercises[day]?.exercises || [];
-
                 return {
                     ...prevExercises,
                     [day]: {
                         ...prevExercises[day],
                         exercises: [...currentExercises, newExercise],
-                        newExercise: {}, // Reset the newExercise object
+                        newExercise: {},
                     },
                 };
             });
@@ -59,78 +54,57 @@ export default function CreateRoutineScreen({ navigation }) {
 
     return (
         <ScrollView>
-            <View style={{ padding: 20 }}>
-                <Text>Create a New Routine</Text>
+            <View style={styles.container}>
+                <Text style={styles.heading}>Create a New Routine</Text>
+
                 <TextInput
                     placeholder="Routine Name"
                     value={routineName}
                     onChangeText={setRoutineName}
-                    style={{ borderWidth: 1, marginVertical: 10 }}
+                    style={styles.input}
                 />
                 <TextInput
                     placeholder="Day Name"
                     value={newDayName}
                     onChangeText={setNewDayName}
-                    style={{ borderWidth: 1, marginVertical: 10 }}
+                    style={styles.input}
                 />
                 <Button title="Add Day" onPress={addDay} />
+
                 {days.map((day, index) => (
-                    <View key={index}>
-                        <Text>{day}</Text>
-                        <TextInput
-                            placeholder="Exercise Name"
-                            value={
-                                exercises[day]?.newExercise?.newExerciseName ||
-                                ""
-                            }
-                            onChangeText={(text) =>
-                                updateNewExerciseField(
-                                    day,
-                                    "newExerciseName",
-                                    text
-                                )
-                            }
-                            style={{ borderWidth: 1, marginVertical: 10 }}
-                        />
-                        <TextInput
-                            placeholder="Sets"
-                            value={String(
-                                exercises[day]?.newExercise?.newSets || ""
-                            )}
-                            onChangeText={(text) =>
-                                updateNewExerciseField(
-                                    day,
-                                    "newSets",
-                                    parseInt(text)
-                                )
-                            }
-                            keyboardType="numeric"
-                            style={{ borderWidth: 1, marginVertical: 10 }}
-                        />
-                        <TextInput
-                            placeholder="Reps"
-                            value={String(
-                                exercises[day]?.newExercise?.newReps || ""
-                            )}
-                            onChangeText={(text) =>
-                                updateNewExerciseField(
-                                    day,
-                                    "newReps",
-                                    parseInt(text)
-                                )
-                            }
-                            keyboardType="numeric"
-                            style={{ borderWidth: 1, marginVertical: 10 }}
-                        />
-                        <Button
-                            title="Add Exercise"
-                            onPress={() => addExercise(day)}
-                        />
-                        {exercises[day]?.exercises?.map((exercise, exIndex) => (
-                            <Text key={exIndex}>
-                                {`${exercise.name} - Sets: ${exercise.sets}, Reps: ${exercise.reps}`}
-                            </Text>
-                        ))}
+                    <View key={index} style={styles.dayContainer}>
+                        <Text style={styles.dayHeading}>{day}</Text>
+
+                        <View style={styles.exerciseContainer}>
+                            <TextInput
+                                placeholder="Exercise Name"
+                                value={exercises[day]?.newExercise?.newExerciseName || ""}
+                                onChangeText={(text) => updateNewExerciseField(day, "newExerciseName", text)}
+                                style={styles.input}
+                            />
+                            <View style={styles.setsRepsInput}>
+                                <TextInput
+                                    placeholder="Sets"
+                                    value={String(exercises[day]?.newExercise?.newSets || "")}
+                                    onChangeText={(text) => updateNewExerciseField(day, "newSets", parseInt(text))}
+                                    keyboardType="numeric"
+                                    style={[styles.input, styles.numericInput]}
+                                />
+                                <TextInput
+                                    placeholder="Reps"
+                                    value={String(exercises[day]?.newExercise?.newReps || "")}
+                                    onChangeText={(text) => updateNewExerciseField(day, "newReps", parseInt(text))}
+                                    keyboardType="numeric"
+                                    style={[styles.input, styles.numericInput]}
+                                />
+                            </View>
+                            <Button title="Add Exercise" onPress={() => addExercise(day)} />
+                            {exercises[day]?.exercises?.map((exercise, exIndex) => (
+                                <Text key={exIndex} style={styles.exerciseText}>
+                                    {`${exercise.name} - Sets: ${exercise.sets}, Reps: ${exercise.reps}`}
+                                </Text>
+                            ))}
+                        </View>
                     </View>
                 ))}
                 {/* Button to submit the routine */}
@@ -140,3 +114,51 @@ export default function CreateRoutineScreen({ navigation }) {
         </ScrollView>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        padding: 20,
+        backgroundColor: "grey",
+    },
+    heading: {
+        fontSize: 24,
+        fontWeight: "bold",
+        marginBottom: 20,
+    },
+    input: {
+        borderWidth: 1,
+        marginVertical: 10,
+        paddingHorizontal: 10,
+        paddingVertical: 8,
+        borderRadius: 6,
+        backgroundColor: "white"
+    },
+    dayContainer: {
+        marginBottom: 20
+    },
+    dayHeading: {
+        fontSize: 20,
+        fontWeight: "bold",
+        marginBottom: 10,
+    },
+    exerciseContainer: {
+        borderWidth: 1,
+        borderColor: "#ddd",
+        padding: 10,
+        borderRadius: 6,
+    },
+    setsRepsInput: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginBottom: 10,
+    },
+    numericInput: {
+        width: "48%",
+    },
+    exerciseText: {
+        marginBottom: 5,
+    },
+});
+
+// Exporting the CreateRoutineScreen component
+export { CreateRoutineScreen };
